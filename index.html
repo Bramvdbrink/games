@@ -1,85 +1,41 @@
-<!DOCTYPE html>
 <html>
+
 <head>
-  <style>
-    #container {
-      width: 400px;
-      height: 400px;
-      border: 1px solid black;
-      position: relative;
-    }
-    #ball {
-      width: 20px;
-      height: 20px;
-      background-color: red;
-      border-radius: 50%;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }
-   #goal {
-    width: 50px;
-    height: 50px;
-    background-color: green;
-    position: absolute;
-    top: 80%;
-    left: 80%;
-}
-    .maze {
-      position: absolute;
-      background-color: black;
-    }
-  </style>
+  <title>Tic Tac Toe</title>
+  <meta name="description" content="Multiplayer Tic Tac Toe Game">
+  <link rel="stylesheet" href="./css/index.css">
 </head>
-<body>
 
-<div id="container">
-  <div id="ball"></div>
-  <div id="goal"></div>
-  <div class="maze" style="width: 20px; height: 150px; top: 100px; left: 100px;"></div>
-  <div class="maze" style="width: 150px; height: 20px; top: 200px; left: 200px;"></div>
-</div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const container = document.getElementById('container');
-    const ball = document.getElementById('ball');
-    const goal = document.getElementById('goal');
-
-    // Beweging van de bal
-    document.addEventListener('keydown', function(event) {
-        const key = event.key;
-        const ballStyle = getComputedStyle(ball);
-        let ballLeft = parseInt(ballStyle.left);
-        let ballTop = parseInt(ballStyle.top);
-
-        switch (key) {
-            case 'ArrowUp':
-                ballTop = Math.max(ballTop - 10, 0); // Controleer de bovenste rand
-                break;
-            case 'ArrowDown':
-                ballTop = Math.min(ballTop + 10, container.clientHeight - ball.clientHeight); // Controleer de onderste rand
-                break;
-            case 'ArrowLeft':
-                ballLeft = Math.max(ballLeft - 10, 0); // Controleer de linker rand
-                break;
-            case 'ArrowRight':
-                ballLeft = Math.min(ballLeft + 10, container.clientWidth - ball.clientWidth); // Controleer de rechter rand
-                break;
-        }
-
-        // Update positie van de bal
-        ball.style.left = ballLeft + 'px';
-        ball.style.top = ballTop + 'px';
-
-        // Controleer of de bal het doel heeft bereikt
-        if (ballLeft === parseInt(getComputedStyle(goal).left) && ballTop === parseInt(getComputedStyle(goal).top)) {
-          alert('Gefeliciteerd! Je hebt het doel bereikt!');
-        }
-    });
-  });
-</script>
-
+<body class="center">
+  <h1>Tic Tac Toe Game</h2>
+    <div class="center" id="main">
+      <h4>--Play and Enjoy--</h4>
+      <button onclick="start()" class="button">Start a New Game</button>
+      <br>
+      <button onclick="learn()" class="button">Learn How to Play GAME?</button>
+      <br>
+      <button onclick="exit()" class="button">Exit</button>
+    </div>
+    <div class="center" id="learn">
+      <p>
+          You are X, your friend is O. 
+          <br>
+          The first player to get 3 of her marks in a row (up, down, across, or diagonally) is the winner.
+          When all 9 squares are full, the game is over. If no player has 3 marks in a row, the game ends in a tie.
+      </p>
+      <img src="./image/learn.jpg" alt="Learn">
+      <br>
+      <button onclick="main()" class="button">Back</button>
+    </div>
+    <div class="center" id="game">
+      <div class="center" style="margin: 5px;">
+        <h3 id="textPlayer" style="font-size: 0.9rem;">(Current Player 1)</h2>
+          <h3 id="textComd" style="font-size: 0.9rem;">Player 2 can play now...</h2>
+      </div>
+      <canvas id="tic-tac-toe-board" class="center"></canvas>
+    </div>
+    <!-- Script OF Game -->
+    <script src="./js/index.js"></script>
 </body>
+
 </html>
