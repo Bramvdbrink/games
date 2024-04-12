@@ -18,19 +18,17 @@
       top: 50%;
       transform: translate(-50%, -50%);
     }
-    .obstacle {
-      width: 20px;
-      height: 100px;
-      background-color: blue;
+   #goal {
+    width: 50px;
+    height: 50px;
+    background-color: green;
+    position: absolute;
+    top: 80%;
+    left: 80%;
+}
+    .maze {
       position: absolute;
-    }
-    #goal {
-      width: 50px;
-      height: 50px;
-      background-color: green;
-      position: absolute;
-      top: 80%;
-      left: 80%;
+      background-color: black;
     }
   </style>
 </head>
@@ -39,8 +37,8 @@
 <div id="container">
   <div id="ball"></div>
   <div id="goal"></div>
-  <div class="obstacle" style="top: 40%; left: 30%;"></div>
-  <div class="obstacle" style="top: 60%; left: 60%;"></div>
+  <div class="maze" style="width: 20px; height: 150px; top: 100px; left: 100px;"></div>
+  <div class="maze" style="width: 150px; height: 20px; top: 200px; left: 200px;"></div>
 </div>
 
 <script>
@@ -48,66 +46,37 @@
     const container = document.getElementById('container');
     const ball = document.getElementById('ball');
     const goal = document.getElementById('goal');
-    const obstacles = document.querySelectorAll('.obstacle');
 
     // Beweging van de bal
     document.addEventListener('keydown', function(event) {
-      const key = event.key;
-      const ballStyle = getComputedStyle(ball);
-      let ballLeft = parseInt(ballStyle.left);
-      let ballTop = parseInt(ballStyle.top);
+        const key = event.key;
+        const ballStyle = getComputedStyle(ball);
+        let ballLeft = parseInt(ballStyle.left);
+        let ballTop = parseInt(ballStyle.top);
 
-      switch (key) {
-        case 'ArrowUp':
-          ballTop = Math.max(ballTop - 10, 0); // Controleer de bovenste rand
-          break;
-        case 'ArrowDown':
-          ballTop = Math.min(ballTop + 10, container.clientHeight - ball.clientHeight); // Controleer de onderste rand
-          break;
-        case 'ArrowLeft':
-          ballLeft = Math.max(ballLeft - 10, 0); // Controleer de linker rand
-          break;
-        case 'ArrowRight':
-          ballLeft = Math.min(ballLeft + 10, container.clientWidth - ball.clientWidth); // Controleer de rechter rand
-          break;
-      }
-
-      // Controleer voor botsing met obstakels
-      obstacles.forEach(function(obstacle) {
-        const obstacleRect = obstacle.getBoundingClientRect();
-        const ballRect = ball.getBoundingClientRect();
-
-        if (ballRect.bottom >= obstacleRect.top && ballRect.top <= obstacleRect.bottom &&
-            ballRect.right >= obstacleRect.left && ballRect.left <= obstacleRect.right) {
-          // Botsing gedetecteerd, stop de beweging
-          switch (key) {
+        switch (key) {
             case 'ArrowUp':
-              ballTop = Math.min(ballTop + 10, container.clientHeight - ball.clientHeight); // Beweeg naar beneden om botsing te voorkomen
-              break;
+                ballTop = Math.max(ballTop - 10, 0); // Controleer de bovenste rand
+                break;
             case 'ArrowDown':
-              ballTop = Math.max(ballTop - 10, 0); // Beweeg naar boven om botsing te voorkomen
-              break;
+                ballTop = Math.min(ballTop + 10, container.clientHeight - ball.clientHeight); // Controleer de onderste rand
+                break;
             case 'ArrowLeft':
-              ballLeft = Math.min(ballLeft + 10, container.clientWidth - ball.clientWidth); // Beweeg naar rechts om botsing te voorkomen
-              break;
+                ballLeft = Math.max(ballLeft - 10, 0); // Controleer de linker rand
+                break;
             case 'ArrowRight':
-              ballLeft = Math.max(ballLeft - 10, 0); // Beweeg naar links om botsing te voorkomen
-              break;
-          }
+                ballLeft = Math.min(ballLeft + 10, container.clientWidth - ball.clientWidth); // Controleer de rechter rand
+                break;
         }
-      });
 
-      // Update positie van de bal
-      ball.style.left = ballLeft + 'px';
-      ball.style.top = ballTop + 'px';
+        // Update positie van de bal
+        ball.style.left = ballLeft + 'px';
+        ball.style.top = ballTop + 'px';
 
-      // Controleer voor winstconditie
-      const ballRect = ball.getBoundingClientRect();
-      const goalRect = goal.getBoundingClientRect();
-      if (ballRect.bottom >= goalRect.top && ballRect.top <= goalRect.bottom &&
-          ballRect.right >= goalRect.left && ballRect.left <= goalRect.right) {
-        alert('Gefeliciteerd! Je hebt het doel bereikt!');
-      }
+        // Controleer of de bal het doel heeft bereikt
+        if (ballLeft === parseInt(getComputedStyle(goal).left) && ballTop === parseInt(getComputedStyle(goal).top)) {
+          alert('Gefeliciteerd! Je hebt het doel bereikt!');
+        }
     });
   });
 </script>
