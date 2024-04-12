@@ -1,90 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roll a Ball with Obstacles</title>
-<style>
-    canvas {
-        border: 1px solid black;
-        display: block;
-        margin: 0 auto;
+  <style>
+    #container {
+      width: 400px;
+      height: 400px;
+      border: 1px solid black;
+      position: relative;
     }
-</style>
+    #ball {
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .obstacle {
+      width: 20px;
+      height: 100px;
+      background-color: blue;
+      position: absolute;
+    }
+    #goal {
+      width: 50px;
+      height: 50px;
+      background-color: green;
+      position: absolute;
+      top: 80%;
+      left: 80%;
+    }
+  </style>
 </head>
 <body>
-<canvas id="myCanvas" width="480" height="320"></canvas>
+
+<div id="container">
+  <div id="ball"></div>
+  <div id="goal"></div>
+  <div class="obstacle" style="top: 40%; left: 30%;"></div>
+  <div class="obstacle" style="top: 60%; left: 60%;"></div>
+</div>
+
 <script>
-    const canvas = document.getElementById('myCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    let x = canvas.width / 2;
-    let y = canvas.height - 30;
-    let dx = 2;
-    let dy = -2;
-    const ballRadius = 10;
-    const obstacleWidth = 80;
-    const obstacleHeight = 20;
-    let obstacleX = (canvas.width - obstacleWidth) / 2;
-    let obstacleY = 100;
-    const goalWidth = 60;
-    const goalHeight = 30;
-    const goalX = (canvas.width - goalWidth) / 2;
-    const goalY = 10;
+  document.addEventListener("DOMContentLoaded", function() {
+    const container = document.getElementById('container');
+    const ball = document.getElementById('ball');
+    const goal = document.getElementById('goal');
+    const obstacles = document.querySelectorAll('.obstacle');
 
-    function drawBall() {
-        ctx.beginPath();
-        ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-        ctx.fillStyle = '#0095DD';
-        ctx.fill();
-        ctx.closePath();
-    }
+    // Beweging van de bal
+    document.addEventListener('keydown', function(event) {
+      const key = event.key;
+      const ballStyle = getComputedStyle(ball);
+      let ballLeft = parseInt(ballStyle.left);
+      let ballTop = parseInt(ballStyle.top);
 
-    function drawObstacle() {
-        ctx.beginPath();
-        ctx.rect(obstacleX, obstacleY, obstacleWidth, obstacleHeight);
-        ctx.fillStyle = '#FF0000';
-        ctx.fill();
-        ctx.closePath();
-    }
+      switch (key) {
+        case 'ArrowUp':
+          ballTop = Math.max(ballTop - 10, 0); // Controleer de bovenste rand
+          break;
+        case 'ArrowDown':
+          ballTop = Math.min(ballTop + 10, container.clientHeight - ball.clientHeight); // Controleer de onderste rand
+          break;
+        case 'ArrowLeft':
+          ballLeft = Math.max(ballLeft - 10, 0); // Controleer de linker rand
+          break;
+        case 'ArrowRight':
+          ballLeft = Math.min(ballLeft + 10, container.clientWidth - ball.clientWidth); // Controleer de rechter rand
+          break;
+      }
 
-    function drawGoal() {
-        ctx.beginPath();
-        ctx.rect(goalX, goalY, goalWidth, goalHeight);
-        ctx.fillStyle = '#00FF00';
-        ctx.fill();
-        ctx.closePath();
-    }
+      // Controleer voor botsing met obstakels
+      obstacles.forEach(function(obstacle) {
+        const obstacleRect = obstacle.getBoundingClientRect();
+        const ballRect = ball.getBoundingClientRect();
 
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawBall();
-        drawObstacle();
-        drawGoal();
-        x += dx;
-        y += dy;
-
-        // Collision detection with obstacles
-        if (x + dx > obstacleX && x + dx < obstacleX + obstacleWidth && y + dy > obstacleY && y + dy < obstacleY + obstacleHeight) {
-            dy = -dy;
+        if (ballRect.bottom >= obstacleRect.top && ballRect.top <= obstacleRect.bottom &&
+            ballRect.right >= obstacleRect.left && ballRect.left <= obstacleRect.right) {
+          // Botsing gedetecteerd, stop de beweging
+          switch (key) {
+            case 'ArrowUp':
+              ballTop = Math.min(ballTop + 10, container.clientHeight - ball.clientHeight); // Beweeg naar beneden om botsing te voorkomen
+              break;
+            case 'ArrowDown':
+              ballTop = Math.max(ballTop - 10, 0); // Beweeg naar boven om botsing te voorkomen
+              break;
+            case 'ArrowLeft':
+              ballLeft = Math.min(ballLeft + 10, container.clientWidth - ball.clientWidth); // Beweeg naar rechts om botsing te voorkomen
+              break;
+            case 'ArrowRight':
+              ballLeft = Math.max(ballLeft - 10, 0); // Beweeg naar links om botsing te voorkomen
+              break;
+          }
         }
+      });
 
-        // Collision detection with walls
-        if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-            dx = -dx;
-        }
-        if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
-            dy = -dy;
-        }
+      // Update positie van de bal
+      ball.style.left = ballLeft + 'px';
+      ball.style.top = ballTop + 'px';
 
-        // Collision detection with goal
-        if (x > goalX && x < goalX + goalWidth && y > goalY && y < goalY + goalHeight) {
-            alert('Congratulations! You won!');
-            document.location.reload();
-        }
-    }
-
-    setInterval(draw, 10);
+      // Controleer voor winstconditie
+      const ballRect = ball.getBoundingClientRect();
+      const goalRect = goal.getBoundingClientRect();
+      if (ballRect.bottom >= goalRect.top && ballRect.top <= goalRect.bottom &&
+          ballRect.right >= goalRect.left && ballRect.left <= goalRect.right) {
+        alert('Gefeliciteerd! Je hebt het doel bereikt!');
+      }
+    });
+  });
 </script>
+
 </body>
 </html>
