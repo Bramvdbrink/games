@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roll a Ball</title>
+<title>Roll a Ball with Obstacles</title>
 <style>
     canvas {
         border: 1px solid black;
@@ -23,6 +23,14 @@
     let dx = 2;
     let dy = -2;
     const ballRadius = 10;
+    const obstacleWidth = 80;
+    const obstacleHeight = 20;
+    let obstacleX = (canvas.width - obstacleWidth) / 2;
+    let obstacleY = 100;
+    const goalWidth = 60;
+    const goalHeight = 30;
+    const goalX = (canvas.width - goalWidth) / 2;
+    const goalY = 10;
 
     function drawBall() {
         ctx.beginPath();
@@ -32,16 +40,47 @@
         ctx.closePath();
     }
 
+    function drawObstacle() {
+        ctx.beginPath();
+        ctx.rect(obstacleX, obstacleY, obstacleWidth, obstacleHeight);
+        ctx.fillStyle = '#FF0000';
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawGoal() {
+        ctx.beginPath();
+        ctx.rect(goalX, goalY, goalWidth, goalHeight);
+        ctx.fillStyle = '#00FF00';
+        ctx.fill();
+        ctx.closePath();
+    }
+
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBall();
+        drawObstacle();
+        drawGoal();
         x += dx;
         y += dy;
+
+        // Collision detection with obstacles
+        if (x + dx > obstacleX && x + dx < obstacleX + obstacleWidth && y + dy > obstacleY && y + dy < obstacleY + obstacleHeight) {
+            dy = -dy;
+        }
+
+        // Collision detection with walls
         if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
             dx = -dx;
         }
         if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
             dy = -dy;
+        }
+
+        // Collision detection with goal
+        if (x > goalX && x < goalX + goalWidth && y > goalY && y < goalY + goalHeight) {
+            alert('Congratulations! You won!');
+            document.location.reload();
         }
     }
 
