@@ -1,41 +1,127 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Tic Tac Toe</title>
-  <meta name="description" content="Multiplayer Tic Tac Toe Game">
-  <link rel="stylesheet" href="./css/index.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doolhofspel</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+    #maze {
+        width: 400px;
+        height: 400px;
+        border: 2px solid black;
+        margin: 20px auto;
+        position: relative;
+    }
+    .wall {
+        background-color: black;
+        width: 40px;
+        height: 40px;
+        position: absolute;
+    }
+    #start,
+    #finish {
+        background-color: green;
+    }
+    #player {
+        background-color: red;
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        transition: left 0.1s linear, top 0.1s linear;
+    }
+</style>
 </head>
+<body>
 
-<body class="center">
-  <h1>Tic Tac Toe Game</h2>
-    <div class="center" id="main">
-      <h4>--Play and Enjoy--</h4>
-      <button onclick="start()" class="button">Start a New Game</button>
-      <br>
-      <button onclick="learn()" class="button">Learn How to Play GAME?</button>
-      <br>
-      <button onclick="exit()" class="button">Exit</button>
-    </div>
-    <div class="center" id="learn">
-      <p>
-          You are X, your friend is O. 
-          <br>
-          The first player to get 3 of her marks in a row (up, down, across, or diagonally) is the winner.
-          When all 9 squares are full, the game is over. If no player has 3 marks in a row, the game ends in a tie.
-      </p>
-      <img src="./image/learn.jpg" alt="Learn">
-      <br>
-      <button onclick="main()" class="button">Back</button>
-    </div>
-    <div class="center" id="game">
-      <div class="center" style="margin: 5px;">
-        <h3 id="textPlayer" style="font-size: 0.9rem;">(Current Player 1)</h2>
-          <h3 id="textComd" style="font-size: 0.9rem;">Player 2 can play now...</h2>
-      </div>
-      <canvas id="tic-tac-toe-board" class="center"></canvas>
-    </div>
-    <!-- Script OF Game -->
-    <script src="./js/index.js"></script>
+<h1>Doolhofspel</h1>
+
+<div id="maze">
+    <div id="start" class="wall"></div>
+    <div class="wall" style="left: 80px; top: 0;"></div>
+    <div class="wall" style="left: 160px; top: 0;"></div>
+    <div class="wall" style="left: 240px; top: 0;"></div>
+    <div class="wall" style="left: 320px; top: 0;"></div>
+    <div class="wall" style="left: 0; top: 80px;"></div>
+    <div class="wall" style="left: 80px; top: 80px;"></div>
+    <div class="wall" style="left: 160px; top: 80px;"></div>
+    <div class="wall" style="left: 320px; top: 80px;"></div>
+    <div class="wall" style="left: 0; top: 160px;"></div>
+    <div class="wall" style="left: 240px; top: 160px;"></div>
+    <div class="wall" style="left: 320px; top: 160px;"></div>
+    <div class="wall" style="left: 0; top: 240px;"></div>
+    <div class="wall" style="left: 80px; top: 240px;"></div>
+    <div class="wall" style="left: 160px; top: 240px;"></div>
+    <div class="wall" style="left: 240px; top: 240px;"></div>
+    <div id="finish" class="wall" style="left: 320px; top: 240px;"></div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const player = document.getElementById('player');
+        const maze = document.getElementById('maze');
+        const walls = document.querySelectorAll('.wall');
+
+        let isGameOver = false;
+
+        // Startpositie van de speler
+        let playerLeft = 0;
+        let playerTop = 0;
+
+        // Event listener voor toetsenbordbediening
+        document.addEventListener('keydown', function(event) {
+            if (!isGameOver) {
+                const key = event.key;
+                let newLeft = playerLeft;
+                let newTop = playerTop;
+
+                // Beweeg de speler op basis van toetsaanslagen
+                switch (key) {
+                    case 'ArrowUp':
+                        newTop -= 40;
+                        break;
+                    case 'ArrowDown':
+                        newTop += 40;
+                        break;
+                    case 'ArrowLeft':
+                        newLeft -= 40;
+                        break;
+                    case 'ArrowRight':
+                        newLeft += 40;
+                        break;
+                }
+
+                // Controleer of de nieuwe positie van de speler in de muur is
+                for (const wall of walls) {
+                    const wallRect = wall.getBoundingClientRect();
+                    const playerRect = player.getBoundingClientRect();
+                    if (newLeft === wallRect.left && newTop === wallRect.top &&
+                        playerRect.right === wallRect.right && playerRect.bottom === wallRect.bottom) {
+                        return; // stop beweging als speler tegen de muur botst
+                    }
+                }
+
+                // Controleer of de speler het doel heeft bereikt
+                if (newLeft === 320 && newTop === 240) {
+                    alert('Gefeliciteerd! Je hebt het doel bereikt!');
+                    isGameOver = true;
+                    return;
+                }
+
+                // Update de positie van de speler
+                playerLeft = newLeft;
+                playerTop = newTop;
+                player.style.left = playerLeft + 'px';
+                player.style.top = playerTop + 'px';
+            }
+        });
+    });
+</script>
+
 </body>
-
 </html>
